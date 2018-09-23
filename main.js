@@ -4,35 +4,29 @@
 var _ls = require( './ls' );
 
 // the dictionary
-var _dict = {
+var _currentDict = {
   x: 'x',
   y: 'y'
 };
 
 // get a list of all modules
-_ls( 'modules', /\.(?:js|jsx|ejs)$/ ).then( function ( modules )
+_ls( 'modules', /\.(?:js|jsx|ejs)$/i ).then( function ( modules )
 {
-  var i = 0;
+  var i, l;
 
-  function next ( returnedDict )
-  {
-    var dictCopy;
-
-    if ( i >= modules.length ) {
-      console.log( ' - The main script successfully finished' );
-      console.log( ' - Final dictionary:', returnedDict );
-      return;
-    }
-
-    dictCopy = Object.assign( {}, returnedDict );
+  for ( i = 0, l = modules.length; i < l; ++i ) {
+    var moduleName = modules[ i ];
 
     try {
-      require( modules[ i++ ] )( dictCopy, next );
+      var module = require( moduleName );
+      var processedDict = module( _currentDict );
+      console.log( 'Module "' + moduleName + '" returned dictionary:', processedDict );
+      _currentDict = processedDict;
     } catch ( error ) {
-      console.log( ' - An error occured', error.message );
-      next( dictCopy );
+      console.log( 'An error occured in module "' + moduleName + '" (skipping this module)\n', error );
     }
   }
 
-  next( _dict );
+  console.log( 'The main script successfully finished' );
+  console.log( 'Final dictionary:', _currentDict );
 }, console.log );

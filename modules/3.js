@@ -1,16 +1,13 @@
 'use strict';
 
-function upper ( dict, next )
+function upper ( dict )
 {
-  console.log( ' - 3.js' );
-
   Object.keys( dict ).forEach( function ( key )
   {
     dict[ key ] = dict[ key ].toUpperCase();
   } );
 
-  // call next module
-  next( dict );
+  return dict;
 }
 
 module.exports = upper;
